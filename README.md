@@ -71,8 +71,8 @@ pip install -r requirements.txt
 
    ```
    DB_NAME=l_notice_db
-   DB_USER=l_notice_user
-   DB_PASSWORD=securepassword
+   DB_USER=root
+   DB_PASSWORD=
    DB_HOST=127.0.0.1
    DB_PORT=3306
    ```
@@ -114,44 +114,3 @@ Access the application:
 
 - **Admin Dashboard**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 - **API Endpoints**: [http://127.0.0.1:8000/api/notices/](http://127.0.0.1:8000/api/notices/)
-
----
-
-## **Folder Structure**
-
-```
-l_notice_server/
-├── core/                  # Main application
-│   ├── migrations/        # Database migrations
-│   ├── models.py          # Models for the core app
-│   ├── views.py           # API endpoints
-│   ├── serializers.py     # DRF serializers
-│   └── urls.py            # App-specific URLs
-├── l_notice_server/       # Project settings
-│   ├── settings.py        # Configuration
-│   ├── urls.py            # Root URLs
-│   └── wsgi.py            # Deployment
-├── manage.py              # Django management script
-├── requirements.txt       # Python dependencies
-└── .env                   # Environment variables
-```
-
----
-
-## **Future Enhancements**
-
-- Add user authentication with JWT.
-- Implement filtering and pagination for API endpoints.
-- Integrate a frontend (React or Angular).
-
----
-
-## **Contributing**
-
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
-
----
-
-## **License**
-
-This project is licensed under the MIT License.
