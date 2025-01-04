@@ -1,62 +1,83 @@
-# Byte-compiled / optimized / DLL files
-*.pyc
-*.pyo
-*.pyd
+# Global Python ignores
 __pycache__/
-
-# C extensions
+*.py[cod]
+*$py.class
 *.so
 
-# Virtual environment
-venv/
+# Virtual environments for all microservices
+user_service/venv/
+notice_service/venv/
+communication_service/venv/
+reporting_service/venv/
 
-# Django stuff:
+# Local environment variable files for all services
+user_service/.env
+notice_service/.env
+communication_service/.env
+reporting_service/.env
+
+# Django-related ignores
 *.log
 *.pot
-*.py[cod]
+*.pyc
+*.pyo
+*.sqlite3
 db.sqlite3
-instance/
-media/
-staticfiles/
 
-# Local development environment
-.env
-*.local
+# Media and static files
+user_service/media/
+user_service/staticfiles/
+user_service/static/
+notice_service/media/
+notice_service/staticfiles/
+notice_service/static/
+communication_service/media/
+communication_service/staticfiles/
+communication_service/static/
+reporting_service/media/
+reporting_service/staticfiles/
+reporting_service/static/
 
-# Pytest cache
-.pytest_cache/
+# Node.js (if frontend dependencies are in the same repository)
+node_modules/
 
-# Unit test / coverage reports
-.coverage
+# Coverage reports
 htmlcov/
-.tox/
+.coverage
+.coverage.*
+.cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Test-related files
+.tox/
+.pytest_cache/
+*.test
 
-# IDE specific files
-.idea/
+# Editor and IDE-specific files
 .vscode/
+.idea/
 *.swp
-*.swo
-*.bak
-*.tmp
-
-# OS generated files
+*~
+.project
+.pydevproject
 .DS_Store
-Thumbs.db
 
-# Git metadata
-*.orig
+# Docker-specific ignores
+*.log
+docker-compose.override.yml
 
-# MySQL
-*.sql
-*.sql.gz
+# MyPy cache
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# AWS Credentials
-*.pem
+# Pyre cache
+.pyre/
+
+# Build and dist folders (for any compiled files or distributions)
+build/
+dist/
+*.egg-info/
