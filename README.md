@@ -96,11 +96,13 @@ cd communication-notice
    ```
 2. Configure your database connection in the `.env` file:
    ```env
+   # PostgreSQL Database Configuration
+   DB_ENGINE=django.db.backends.postgresql
+   DB_NAME=communication_notice
+   DB_USER=
+   DB_PASSWORD=
    DB_HOST=localhost
    DB_PORT=5432
-   DB_NAME=communication_notice
-   DB_USER=your_user
-   DB_PASSWORD=your_password
    ```
 
 #### **Step 3: Set Up Each Service**
