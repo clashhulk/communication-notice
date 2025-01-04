@@ -1,6 +1,6 @@
 # Communication Notice System
 
-A scalable microservices-based system for managing notices, organizations, and multi-channel communication. This project supports modular microservices with a single PostgreSQL database (for now) and a React.js frontend.
+A scalable microservices-based system for managing notices, organizations, and multi-channel communication. This project supports both traditional deployment and Docker-based containerized environments.
 
 ## **Project Overview**
 
@@ -8,8 +8,8 @@ This project handles the creation, management, and communication of notices thro
 
 - **Microservices**: Separate Django services for Users, Notices, Communication, and Reporting.
 - **Database**: A single shared PostgreSQL instance for all services.
-- **Frontend**: React.js for UI, interacting with backend REST APIs.
-- **Containerization**: Docker and Docker Compose for orchestrating services.
+- **Frontend**: React.js for the user interface, interacting with backend REST APIs.
+- **Containerization (Optional)**: Docker and Docker Compose for orchestrating services.
 
 ---
 
@@ -19,7 +19,7 @@ This project handles the creation, management, and communication of notices thro
 - **Notice Management**: Create, update, and track notices with dynamic data fields.
 - **Communication Service**: Queue-based communication logs for Email, WhatsApp, SMS, and RPAD.
 - **Reporting**: Track delivery statuses, user actions, and system audits.
-- **Scalability**: Modular services that can transition to independent databases in the future.
+- **Flexibility**: Run the project in a traditional or Dockerized environment.
 
 ---
 
@@ -37,7 +37,7 @@ This project handles the creation, management, and communication of notices thro
 
 ### Deployment:
 
-- **Docker & Docker Compose**: Containerization and orchestration.
+- **Docker & Docker Compose**: Containerization and orchestration (optional).
 
 ---
 
@@ -45,8 +45,8 @@ This project handles the creation, management, and communication of notices thro
 
 ```plaintext
 communication-notice/
-├── docker-compose.yml         # Orchestrates all services
-├── Makefile                   # Automates common tasks
+├── docker-compose.yml         # Orchestrates all services (Docker setup)
+├── Makefile                   # Automates common tasks (Docker setup)
 ├── .env                       # Environment variables
 ├── README.md                  # Project documentation
 ├── user_service/              # User management service
@@ -73,130 +73,192 @@ communication-notice/
 
 ## **Setup Instructions**
 
-### Prerequisites
+### **Option 1: Traditional Setup (Without Docker)**
+
+#### Prerequisites
 
 - Python 3.9+
-- Node.js (for React.js frontend)
 - PostgreSQL
-- Docker & Docker Compose
+- Node.js (for React.js frontend)
 
----
-
-### **Step 1: Clone the Repository**
+#### **Step 1: Clone the Repository**
 
 ```bash
-git clone https://github.com/clashhulk/communication-notice.git
+git clone <repository_url>
 cd communication-notice
 ```
 
----
+#### **Step 2: Set Up the Database**
 
-### **Step 2: Set Up Environment Variables**
+1. Install PostgreSQL and create a database:
+   ```bash
+   createdb communication_notice
+   ```
+2. Configure your database connection in the `.env` file:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=communication_notice
+   DB_USER=your_user
+   DB_PASSWORD=your_password
+   ```
 
-Create a `.env` file in the project root and add the following:
+#### **Step 3: Set Up Each Service**
 
-```env
-DB_HOST=db
-DB_PORT=5432
-DB_NAME=communication_notice
-DB_USER=your_user
-DB_PASSWORD=your_password
+For each service (e.g., `user_service`), follow these steps:
+
+1. Navigate to the service directory:
+   ```bash
+   cd user_service
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Apply database migrations:
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+5. Run the development server:
+   ```bash
+   python manage.py runserver 0.0.0.0:8000
+   ```
+
+Repeat these steps for `notice_service`, `communication_service`, and `reporting_service` using different ports (`8001`, `8002`, `8003`).
+
+### **Option 2: Docker Setup**
+
+#### Prerequisites
+
+- Docker
+- Docker Compose
+
+#### **Step 1: Clone the Repository**
+
+```bash
+git clone <repository_url>
+cd communication-notice
 ```
 
----
+#### **Step 2: Set Up Environment Variables**
 
-### **Step 3: Build and Start Services**
+Create a `.env` file in the project root:
 
-Build and start all services using Docker Compose:
+```env
+# PostgreSQL Database Configuration
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=communication_notice
+DB_USER=
+DB_PASSWORD=
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+#### **Step 3: Build and Start Services**
+
+Run the following command to build and start all services:
 
 ```bash
 docker-compose up --build
 ```
 
----
+#### **Step 4: Apply Migrations**
 
-### **Step 4: Apply Migrations**
-
-Run migrations for all services:
+Run migrations for each service:
 
 ```bash
-make migrate-user
-make migrate-notice
-make migrate-communication
-make migrate-reporting
+docker exec -it user_service python manage.py makemigrations
+docker exec -it user_service python manage.py migrate
+docker exec -it notice_service python manage.py makemigrations
+docker exec -it notice_service python manage.py migrate
+# Repeat for other services...
+```
+
+#### **Step 5: Access Services**
+
+- **User Service** : `http://localhost:8000`
+- **Notice Service** : `http://localhost:8001`
+- **Communication Service** : `http://localhost:8002`
+- **Reporting Service** : `http://localhost:8003`
+
+#### **Step 6: Access Frontend**
+
+clone and start frontend using `npm start`
+
+The React frontend (if dockerized) will be available at `http://localhost:3000`.
+
+---
+
+## **Common Commands**
+
+### Traditional (Without Docker)
+
+- **Start a service** :
+
+```bash
+  python manage.py runserver
+```
+
+- **Run migrations** :
+
+```bash
+  python manage.py makemigrations
+  python manage.py migrate
+```
+
+### Docker
+
+- **Start all services** :
+
+```bash
+  docker-compose up --build
+```
+
+- **Stop all services** :
+
+```bash
+  docker-compose down
+```
+
+- **View logs** :
+
+```bash
+  docker-compose logs -f
+```
+
+- **Run migrations for a service** :
+
+```bash
+  docker exec -it user_service python manage.py migrate
 ```
 
 ---
 
-### **Step 5: Access Services**
+## **API Endpoints**
 
-Each service is exposed on different ports:
-
-- **User Service**: `http://localhost:8000`
-- **Notice Service**: `http://localhost:8001`
-- **Communication Service**: `http://localhost:8002`
-- **Reporting Service**: `http://localhost:8003`
-
----
-
-### **Step 6: Frontend Setup**
-
-Navigate to the React frontend directory (if available) and start the development server:
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-The frontend will be available at `http://localhost:3000`.
-
----
-
-## **How to Use**
-
-### API Endpoints
-
-#### **User Service**
+### **User Service**
 
 - `GET /api/users/`: List all users.
 - `POST /api/users/`: Create a new user.
 
-#### **Notice Service**
+### **Notice Service**
 
 - `GET /api/notices/`: List all notices.
 - `POST /api/notices/`: Create a new notice.
 
-#### **Communication Service**
+### **Communication Service**
 
 - `POST /api/communications/`: Queue a communication log.
 
-#### **Reporting Service**
+### **Reporting Service**
 
 - `GET /api/reports/`: Generate reports.
-
----
-
-## **Development Workflow**
-
-### Common Commands (Using Makefile)
-
-- **Start all services**:
-  ```bash
-  make up
-  ```
-- **Stop all services**:
-  ```bash
-  make down
-  ```
-- **View logs**:
-  ```bash
-  make logs
-  ```
-- **Clean Docker environment**:
-  ```bash
-  make clean
-  ```
 
 ---
 
@@ -217,82 +279,11 @@ Feel free to contribute to this project. Fork the repository and submit a pull r
 
 ## **License**
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License]().
 
 ```
 
 ---
 
-This file is now fully copy-paste ready. Let me know if you’d like to make any further adjustments!
-```
-
-# Communication Notice System
-
-A scalable microservices-based system for managing notices, organizations, and multi-channel communication. This project supports modular microservices with a single PostgreSQL database (for now) and a React.js frontend.
-
-## **Project Overview**
-
-This project handles the creation, management, and communication of notices through multiple channels (Email, SMS, WhatsApp, RPAD). It is built using the following architecture:
-
-- **Microservices**: Separate Django services for Users, Notices, Communication, and Reporting.
-- **Database**: A single shared PostgreSQL instance for all services.
-- **Frontend**: React.js for UI, interacting with backend REST APIs.
-- **Containerization**: Docker and Docker Compose for orchestrating services.
-
----
-
-## **Features**
-
-- **User Management**: Manage users, roles, and organizations.
-- **Notice Management**: Create, update, and track notices with dynamic data fields.
-- **Communication Service**: Queue-based communication logs for Email, WhatsApp, SMS, and RPAD.
-- **Reporting**: Track delivery statuses, user actions, and system audits.
-- **Scalability**: Modular services that can transition to independent databases in the future.
-
----
-
-## **Tech Stack**
-
-### Backend:
-
-- **Django**: Backend framework for each microservice.
-- **Django REST Framework (DRF)**: To expose REST APIs.
-- **PostgreSQL**: Database for persistent storage.
-
-### Frontend:
-
-- **React.js**: Frontend UI consuming the REST APIs.
-
-### Deployment:
-
-- **Docker & Docker Compose**: Containerization and orchestration.
-
----
-
-## **Directory Structure**
-
-```plaintext
-communication-notice/
-├── docker-compose.yml         # Orchestrates all services
-├── Makefile                   # Automates common tasks
-├── .env                       # Environment variables
-├── README.md                  # Project documentation
-├── user_service/              # User management service
-│   ├── manage.py
-│   ├── user_service/
-│   └── users/
-├── notice_service/            # Notice management service
-│   ├── manage.py
-│   ├── notice_service/
-│   └── notices/
-├── communication_service/     # Communication handling service
-│   ├── manage.py
-│   ├── communication_service/
-│   └── communications/
-├── reporting_service/         # Reporting and tracking service
-│   ├── manage.py
-│   ├── reporting_service/
-│   └── reports/
-├── shared/                    # Shared utilities (if any)
-├── logs/                      # Centralized logs for all services
+This `README.md` provides clear instructions for running the project traditionally and with Docker, catering to different preferences. Let me know if you need further customization!
 ```
