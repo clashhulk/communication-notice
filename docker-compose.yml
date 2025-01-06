@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3"
 
 services:
   # User Service
@@ -20,62 +20,62 @@ services:
       - DB_USER=your_user
       - DB_PASSWORD=your_password
 
-  # Notice Service
-  notice_service:
-    build:
-      context: ./notice_service
-    container_name: notice_service
-    command: python manage.py runserver 0.0.0.0:8001
-    volumes:
-      - ./notice_service:/app
-    ports:
-      - "8001:8000"
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=communication_notice
-      - DB_USER=your_user
-      - DB_PASSWORD=your_password
+  # # Notice Service
+  # notice_service:
+  #   build:
+  #     context: ./notice_service
+  #   container_name: notice_service
+  #   command: python manage.py runserver 0.0.0.0:8001
+  #   volumes:
+  #     - ./notice_service:/app
+  #   ports:
+  #     - "8001:8000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #     - DB_NAME=communication_notice
+  #     - DB_USER=your_user
+  #     - DB_PASSWORD=your_password
 
-  # Communication Service
-  communication_service:
-    build:
-      context: ./communication_service
-    container_name: communication_service
-    command: python manage.py runserver 0.0.0.0:8002
-    volumes:
-      - ./communication_service:/app
-    ports:
-      - "8002:8000"
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=communication_notice
-      - DB_USER=your_user
-      - DB_PASSWORD=your_password
+  # # Communication Service
+  # communication_service:
+  #   build:
+  #     context: ./communication_service
+  #   container_name: communication_service
+  #   command: python manage.py runserver 0.0.0.0:8002
+  #   volumes:
+  #     - ./communication_service:/app
+  #   ports:
+  #     - "8002:8000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #     - DB_NAME=communication_notice
+  #     - DB_USER=your_user
+  #     - DB_PASSWORD=your_password
 
-  # Reporting Service
-  reporting_service:
-    build:
-      context: ./reporting_service
-    container_name: reporting_service
-    command: python manage.py runserver 0.0.0.0:8003
-    volumes:
-      - ./reporting_service:/app
-    ports:
-      - "8003:8000"
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=communication_notice
-      - DB_USER=your_user
-      - DB_PASSWORD=your_password
+  # # Reporting Service
+  # reporting_service:
+  #   build:
+  #     context: ./reporting_service
+  #   container_name: reporting_service
+  #   command: python manage.py runserver 0.0.0.0:8003
+  #   volumes:
+  #     - ./reporting_service:/app
+  #   ports:
+  #     - "8003:8000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - DB_HOST=db
+  #     - DB_PORT=5432
+  #     - DB_NAME=communication_notice
+  #     - DB_USER=your_user
+  #     - DB_PASSWORD=your_password
 
   # PostgreSQL Database
   db:
