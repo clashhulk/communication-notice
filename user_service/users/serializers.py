@@ -23,7 +23,7 @@ class OrganizationListCreateAPIView(generics.ListCreateAPIView):
     """
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 # User Registration Serializer
 
 
