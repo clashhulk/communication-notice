@@ -8,28 +8,22 @@ from .serializers import (
     UserSerializer,
     OrganizationSerializer
 )
-
-# Organization APIs
+from rest_framework.permissions import AllowAny
 
 
 class OrganizationListCreateAPIView(generics.ListCreateAPIView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AllowAny]
 # class OrganizationListCreateAPIView(generics.ListCreateAPIView):
 #     permission_classes = [IsAdminUser]
-
-# User Registration API
 
 
 class RegisterUserAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
-
-# User APIs
 
 
 class UserListAPIView(generics.ListAPIView):
