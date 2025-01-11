@@ -39,7 +39,7 @@ class RegisterUserAPIView(generics.CreateAPIView):
 
 
 class UserPagination(PageNumberPagination):
-    page_size = 10  # Number of users per page
+    page_size = 10
 
 
 class UserListAPIView(generics.ListAPIView):
@@ -53,7 +53,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated,
-                          IsAdmin]  # Admin-only access
+                          IsAdmin]
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -65,7 +65,7 @@ class TokenValidationAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user  # Get the authenticated user
+        user = request.user
         return Response({
             "id": user.id,
             "username": user.username,

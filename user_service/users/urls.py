@@ -23,5 +23,5 @@ urlpatterns = [
     path('organizations/', OrganizationListCreateAPIView.as_view(),
          name='organization_list_create'),
     path('organizations/<int:pk>/', OrganizationDetailAPIView.as_view(),
-         name='organization_detail'),  # Added back
+         name='organization_detail'),
 ]
