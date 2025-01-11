@@ -1,6 +1,8 @@
-from django.contrib.auth.models import User
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAdminUser
+from .serializers import CustomTokenObtainPairSerializer
 from rest_framework import generics, permissions
-from .models import Organization
+from .models import Organization, User
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
@@ -16,10 +18,8 @@ class OrganizationListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class OrganizationDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Organization.objects.all()
-    serializer_class = OrganizationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class OrganizationListCreateAPIView(generics.ListCreateAPIView):
+#     permission_classes = [IsAdminUser]
 
 # User Registration API
 
@@ -42,3 +42,7 @@ class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
