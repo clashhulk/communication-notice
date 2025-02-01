@@ -1,53 +1,67 @@
 from rest_framework import serializers
-from .models import NoticeType, Notice
+from .models import NoticeType, Template, Notice
+import json
+
+
+class TemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Template
+        fields = '__all__'
 
 
 class NoticeTypeSerializer(serializers.ModelSerializer):
+    templates = TemplateSerializer(
+        many=True, read_only=True)  # Nested Templates
+
     class Meta:
         model = NoticeType
-        fields = ['id', 'org_id', 'name', 'description',
-                  'dynamic_schema', 'created_at']
-
-    def validate_dynamic_schema(self, value):
-        if not isinstance(value, dict):
-            raise serializers.ValidationError(
-                "Dynamic schema must be a valid JSON object.")
-        return value
+        fields = '__all__'
 
 
 class NoticeSerializer(serializers.ModelSerializer):
     notice_type = serializers.PrimaryKeyRelatedField(
         queryset=NoticeType.objects.all())
+    dynamic_data = serializers.JSONField()
 
     class Meta:
         model = Notice
-        fields = [
-            'id',
-            'notice_type',
-            'created_by',
-            'status',
-            'priority',
-            'created_at',
-            'updated_at',
-            'dynamic_data',
-        ]
+        fields = '__all__'
 
     def validate_dynamic_data(self, value):
-        if not isinstance(value, dict):
-            raise serializers.ValidationError(
-                "Dynamic data must be a valid JSON object.")
+        """
+        Validate that dynamic_data matches the schema in NoticeType.
+        """
+        notice_type = self.instance.notice_type if self.instance else self.initial_data.get(
+            'notice_type')
+        if not notice_type:
+            raise serializers.ValidationError("Notice Type is required.")
+
+        # Ensure notice_type is an object, not an ID
+        if isinstance(notice_type, int):
+            notice_type = NoticeType.objects.get(id=notice_type)
+
+        schema = notice_type.dynamic_schema.get('fields', {})
+
+        # Check required fields
+        for field, field_type in schema.items():
+            if field not in value:
+                raise serializers.ValidationError(
+                    f"Missing required field: {field}")
+            if not isinstance(value[field], self.get_python_type(field_type)):
+                raise serializers.ValidationError(f"Invalid type for field '{
+                                                  field}', expected {field_type}")
+
         return value
 
-    def validate(self, attrs):
-        notice_type = attrs.get('notice_type')
-        dynamic_data = attrs.get('dynamic_data')
-
-        if notice_type and dynamic_data:
-            schema_keys = set(notice_type.dynamic_schema.keys())
-            data_keys = set(dynamic_data.keys())
-
-            if schema_keys != data_keys:
-                raise serializers.ValidationError(
-                    "Dynamic data keys must match the dynamic schema keys of the notice type."
-                )
-        return attrs
+    def get_python_type(self, field_type):
+        """
+        Map JSON schema field types to Python types.
+        """
+        mapping = {
+            "string": str,
+            "integer": int,
+            "float": float,
+            "boolean": bool,
+            "date": str,  # Dates should be handled separately
+        }
+        return mapping.get(field_type, str)  # Default to string
