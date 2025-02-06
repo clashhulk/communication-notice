@@ -1,6 +1,7 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 from .models import NoticeType, Template, Notice
 from .serializers import NoticeTypeSerializer, TemplateSerializer, NoticeSerializer
@@ -9,6 +10,7 @@ from .serializers import NoticeTypeSerializer, TemplateSerializer, NoticeSeriali
 class NoticeTypeViewSet(viewsets.ModelViewSet):
     queryset = NoticeType.objects.all()
     serializer_class = NoticeTypeSerializer
+    permission_classes = [AllowAny]
 
 
 class TemplateViewSet(viewsets.ModelViewSet):

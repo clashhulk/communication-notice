@@ -1,0 +1,4 @@
+reset database 
+python manage.py migrate notices zero
+python manage.py makemigrations
+python manage.py migrate

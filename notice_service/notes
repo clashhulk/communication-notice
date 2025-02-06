@@ -1,0 +1,2 @@
+to load dummy data for notice-type use below command 
+python manage.py loaddata notice_types.json
