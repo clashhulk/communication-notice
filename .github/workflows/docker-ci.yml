@@ -2,14 +2,14 @@ name: Docker CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "user_service/**"
       - "notice_service/**"
       - "communication_service/**"
       - "reporting_service/**"
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - "user_service/**"
       - "notice_service/**"
