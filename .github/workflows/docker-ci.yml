@@ -22,15 +22,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - service: user_service
-            path: "user_service/**"
-          - service: notice_service
-            path: "notice_service/**"
-          - service: communication_service
-            path: "communication_service/**"
-          - service: reporting_service
-            path: "reporting_service/**"
+        service:
+          [
+            user_service,
+            notice_service,
+            communication_service,
+            reporting_service,
+          ]
 
     steps:
       - name: Check out the repo
@@ -45,8 +43,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Check paths changed
+      - name: Detect changed paths
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            user_service:
+              - 'user_service/**'
+            notice_service:
+              - 'notice_service/**'
+            communication_service:
+              - 'communication_service/**'
+            reporting_service:
+              - 'reporting_service/**'
+
       - name: Build and push Docker image
-        if: contains(github.event.push.paths, matrix.path) || contains(github.event.pull_request.paths, matrix.path)
+        if: steps.filter.outputs[matrix.service] == 'true'
         uses: docker/build-push-action@v2
         with:
           context: ./${{ matrix.service }}
