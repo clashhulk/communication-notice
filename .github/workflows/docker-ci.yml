@@ -19,21 +19,21 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service:
-          [
-            user_service,
-            notice_service,
-            communication_service,
-            reporting_service,
-          ]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Path Changes Filter
-        id: changes
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Determine Changed Services
+        id: filter
         uses: dorny/paths-filter@v2
         with:
           filters: |
@@ -46,25 +46,18 @@ jobs:
             reporting_service:
               - 'reporting_service/**'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./${{ matrix.service }}
-          file: ./${{ matrix.service }}/Dockerfile
-          push: true
-          tags: qodeways/${{ matrix.service }}:${{ github.sha }}
+      - name: Build and push Docker images
+        if: steps.filter.outputs.user_service == 'true' || steps.filter.outputs.notice_service == 'true' || steps.filter.outputs.communication_service == 'true' || steps.filter.outputs.reporting_service == 'true'
+        run: |
+          services=(${{ steps.filter.outputs.user_service == 'true' && echo 'user_service' }} ${{ steps.filter.outputs.notice_service == 'true' && echo 'notice_service' }} ${{ steps.filter.outputs.communication_service == 'true' && echo 'communication_service' }} ${{ steps.filter.outputs.reporting_service == 'true' && echo 'reporting_service' }})
+          for service in "${services[@]}"
+          do
+            docker build -t qodeways/$service:${{ github.sha }} -f ./$service/Dockerfile ./$service
+            docker push qodeways/$service:${{ github.sha }}
+          done
 
       - name: Deploy to AWS
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (steps.filter.outputs.user_service == 'true' || steps.filter.outputs.notice_service == 'true' || steps.filter.outputs.communication_service == 'true' || steps.filter.outputs.reporting_service == 'true')
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_HOST }}
@@ -74,4 +67,3 @@ jobs:
             cd /home/ec2-user/communication-notice/
             docker-compose pull
             docker-compose up -d
-            docker-compose logs -f
