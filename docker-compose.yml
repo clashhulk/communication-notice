@@ -1,94 +1,38 @@
-version: "3"
+version: "3.8"
 
 services:
-  # User Service
   user_service:
-    build:
-      context: ./user_service
-    container_name: user_service
-    command: python manage.py runserver 0.0.0.0:8000
+    build: ./user_service
     volumes:
-      - ./user_service:/app
+      - ./user_service:/usr/src/app
     ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=communication_notice
-      - DB_USER=your_user
-      - DB_PASSWORD=your_password
+      - "8001:8000"
+    env_file:
+      - ./user_service/.env
 
-  # # Notice Service
-  # notice_service:
-  #   build:
-  #     context: ./notice_service
-  #   container_name: notice_service
-  #   command: python manage.py runserver 0.0.0.0:8001
-  #   volumes:
-  #     - ./notice_service:/app
-  #   ports:
-  #     - "8001:8000"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     - DB_HOST=db
-  #     - DB_PORT=5432
-  #     - DB_NAME=communication_notice
-  #     - DB_USER=your_user
-  #     - DB_PASSWORD=your_password
-
-  # # Communication Service
-  # communication_service:
-  #   build:
-  #     context: ./communication_service
-  #   container_name: communication_service
-  #   command: python manage.py runserver 0.0.0.0:8002
-  #   volumes:
-  #     - ./communication_service:/app
-  #   ports:
-  #     - "8002:8000"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     - DB_HOST=db
-  #     - DB_PORT=5432
-  #     - DB_NAME=communication_notice
-  #     - DB_USER=your_user
-  #     - DB_PASSWORD=your_password
-
-  # # Reporting Service
-  # reporting_service:
-  #   build:
-  #     context: ./reporting_service
-  #   container_name: reporting_service
-  #   command: python manage.py runserver 0.0.0.0:8003
-  #   volumes:
-  #     - ./reporting_service:/app
-  #   ports:
-  #     - "8003:8000"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     - DB_HOST=db
-  #     - DB_PORT=5432
-  #     - DB_NAME=communication_notice
-  #     - DB_USER=your_user
-  #     - DB_PASSWORD=your_password
-
-  # PostgreSQL Database
-  db:
-    image: postgres:latest
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: communication_notice
-    ports:
-      - "5432:5432"
+  notice_service:
+    build: ./notice_service
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./notice_service:/usr/src/app
+    ports:
+      - "8002:8000"
+    env_file:
+      - ./notice_service/.env
 
-volumes:
-  postgres_data:
+  communication_service:
+    build: ./communication_service
+    volumes:
+      - ./communication_service:/usr/src/app
+    ports:
+      - "8003:8000"
+    env_file:
+      - ./communication_service/.env
+
+  reporting_service:
+    build: ./reporting_service
+    volumes:
+      - ./reporting_service:/usr/src/app
+    ports:
+      - "8004:8000"
+    env_file:
+      - ./reporting_service/.env
