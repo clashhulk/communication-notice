@@ -3,18 +3,8 @@ name: Docker CI/CD
 on:
   push:
     branches: [master]
-    paths:
-      - "user_service/**"
-      - "notice_service/**"
-      - "communication_service/**"
-      - "reporting_service/**"
   pull_request:
     branches: [master]
-    paths:
-      - "user_service/**"
-      - "notice_service/**"
-      - "communication_service/**"
-      - "reporting_service/**"
 
 jobs:
   build_and_push:
