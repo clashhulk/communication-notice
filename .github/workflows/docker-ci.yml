@@ -57,13 +57,16 @@ jobs:
           done
 
       - name: Deploy to AWS
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && (steps.filter.outputs.user_service == 'true' || steps.filter.outputs.notice_service == 'true' || steps.filter.outputs.communication_service == 'true' || steps.filter.outputs.reporting_service == 'true')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && (steps.filter.outputs.user_service == 'true' || steps.filter.outputs.notice_service == 'true' || steps.filter.outputs.communication_service == 'true' || steps.filter.outputs.reporting_service == 'true')
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_HOST }}
           username: ec2-user
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "Starting deployment..."
             cd /home/ec2-user/communication-notice/
             docker-compose pull
             docker-compose up -d
+            echo "Deployment completed."
+            docker-compose logs -f
