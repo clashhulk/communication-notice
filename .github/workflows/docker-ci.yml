@@ -3,32 +3,13 @@ name: Docker CI/CD
 on:
   push:
     branches: [master]
-    paths:
-      - "user_service/**"
-      - "notice_service/**"
-      - "communication_service/**"
-      - "reporting_service/**"
-  pull_request:
-    branches: [master]
-    paths:
-      - "user_service/**"
-      - "notice_service/**"
-      - "communication_service/**"
-      - "reporting_service/**"
 
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service:
-          - user_service
-          - notice_service
-          - communication_service
-          - reporting_service
 
     steps:
-      - name: Check out the repo
+      - name: Check out the repository
         uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
@@ -40,18 +21,45 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
+      # Build and Push user_service
+      - name: Build and push user_service
         uses: docker/build-push-action@v2
         with:
-          context: ./${{ matrix.service }}
-          file: ./${{ matrix.service }}/Dockerfile
+          context: ./user_service
+          file: ./user_service/Dockerfile
           push: true
-          tags: qodeways/${{ matrix.service }}:${{ github.sha }}
+          tags: qodeways/user_service:${{ github.sha }}
+
+      # Build and Push notice_service
+      - name: Build and push notice_service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./notice_service
+          file: ./notice_service/Dockerfile
+          push: true
+          tags: qodeways/notice_service:${{ github.sha }}
+
+      # Build and Push communication_service
+      - name: Build and push communication_service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./communication_service
+          file: ./communication_service/Dockerfile
+          push: true
+          tags: qodeways/communication_service:${{ github.sha }}
+
+      # Build and Push reporting_service
+      - name: Build and push reporting_service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./reporting_service
+          file: ./reporting_service/Dockerfile
+          push: true
+          tags: qodeways/reporting_service:${{ github.sha }}
 
   deploy:
     needs: build_and_push
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Deploy to AWS
         uses: appleboy/ssh-action@master
